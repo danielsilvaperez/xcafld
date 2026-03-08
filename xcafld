@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+import sys
+import argparse
+from pathlib import Path
+
+def process_input(file_content):
+    parsed_lines = []
+    
+    for line_num, line in enumerate(file_content, 1):
+        line = line.rstrip('\r\n')
+        
+        if line.lstrip().startswith('#'):
+            continue
+            
+        comment_idx = line.find(' #')
+        if comment_idx != -1:
+            line = line[:comment_idx]
+            
+        line = line.rstrip()
+        if not line:
+            continue
+            
+        prefix_len = 0
+        for char in line:
+            if char in ('├', '─', '└', '│', ' ', '\t'):
+                prefix_len += 1
+            else:
+                break
+                
+        name = line[prefix_len:]
+        if not name:
+            continue
+            
+        is_dir = name.endswith('/')
+        name = name.rstrip('/')
+        if not name:
+            name = '.'
+            
+        parsed_lines.append((prefix_len, name, is_dir))
+
+    stack = []  # List of tuples (prefix_len, path)
+    
+    for i, (prefix_len, name, is_dir_explicit) in enumerate(parsed_lines):
+        # Lookahead: if the next item has a greater prefix_len, this MUST be a directory
+        has_child = False
+        if i + 1 < len(parsed_lines):
+            has_child = parsed_lines[i + 1][0] > prefix_len
+            
+        is_dir = is_dir_explicit or has_child
+
+        while stack and stack[-1][0] >= prefix_len:
+            stack.pop()
+            
+        if stack:
+            current_path = stack[-1][1] / name
+        else:
+            current_path = Path(name)
+            
+        print(f"Creating: {current_path}{'/' if is_dir else ''}")
+        
+        if is_dir:
+            current_path.mkdir(parents=True, exist_ok=True)
+            stack.append((prefix_len, current_path))
+        else:
+            current_path.parent.mkdir(parents=True, exist_ok=True)
+            current_path.touch(exist_ok=True)
+
+def main():
+    parser = argparse.ArgumentParser(description="Scaffold directories and files from tree-like text.")
+    parser.add_argument("file", nargs="?", type=argparse.FileType("r"), default=sys.stdin,
+                        help="Input file containing tree structure. Reads from stdin if omitted.")
+    args = parser.parse_args()
+    
+    try:
+        lines = args.file.readlines()
+        process_input(lines)
+    except KeyboardInterrupt:
+        print("\nOperation cancelled.")
+        sys.exit(1)
+        
+if __name__ == "__main__":
+    main()

@@ -1,4 +1,8 @@
-# xcafld
+# xcafld 🚀
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg)]()
 
 `xcafld` (Scaffold) is a lightweight, zero-dependency Python command-line utility for physically generating directory and file structures out of standard text representations (like `tree` output).
 
@@ -13,19 +17,13 @@ It is designed to easily translate Markdown code blocks or standard input stream
 
 ## Installation
 
-Make sure you have Python 3 installed. You can place `xcafld` anywhere in your system `PATH` (e.g. `/usr/local/bin`).
+You can install `xcafld` globally with this single curl command:
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/xcafld.git
-cd xcafld
-
-# Ensure the script is executable
-chmod +x xcafld
-
-# (Optional) Link it globally
-ln -s $(pwd)/xcafld /usr/local/bin/xcafld
+curl -sL https://raw.githubusercontent.com/danielsilvaperez/xcafld/main/install.sh | bash
 ```
+
+Alternatively, you can manually clone this repository and copy the script to a directory in your `PATH`.
 
 ## Usage
 
@@ -57,3 +55,20 @@ screen-sherpa/
 ```
 
 Running `xcafld` against the text above will instantly scaffold the `screen-sherpa/` tree locally!
+
+## 🤖 AI Agent Tool Usage (System Prompting)
+
+Want your AI Coding Agent to effortlessly scaffold whole projects at once? Give them `xcafld` as a system tool! By copying the prompt snippet below into your Agent's instructions, they can generate sweeping directory setups in 1 output instead of running 20 distinct `mkdir` and `touch` shell commands.
+
+**Prompt Snippet for your AI:**
+> You have access to a CLI tool called `xcafld`. Whenever you need to create a large amount of folders and files at once, do NOT run `mkdir` manually. Instead, write out a standard ASCII tree block and pipe it into `xcafld`.
+>
+> Example:
+> \`\`\`bash
+> cat << 'EOF' | xcafld
+> my_app/
+> ├── src/
+> │   └── main.py
+> └── README.md
+> EOF
+> \`\`\`
